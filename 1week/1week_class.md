@@ -81,15 +81,15 @@ SELECT  LEFT(YM,4) YY
 9. 2018년 1월의 환불 고객 수? 	
 ``` sql 
 SELECT  COUNT(DISTINCT MEM_NO)	
-  FROM  FS_SALES	
- WHERE  LEFT(SALES_DY, 6) = '201801'	
- 	    AND CAN_YN = 'Y'
+  FROM  FS_SALE	
+ WHERE  YM = '201801'	
+ 	AND CAN_YN = 'Y'
 ```	
 10. 2016년도 VS 2017년도 월별 환불고객 수 비교. 	
 추이가 발생하는가? 	
 ``` sql 
 SELECT  YM 	
-	    , COUNT(DISTINCT MEM_NO) 환불건수
+	, COUNT(DISTINCT MEM_NO) 환불건수
   FROM  FS_SALE	
  WHERE  1=1	
         AND YM BETWEEN '201601' AND '201712' 	
