@@ -47,7 +47,7 @@ SELECT  COUNT(DISTINCT MEM_NO) 구매자수
 
 * 6-1. 각 일자마다의 구매지표를 확인하고 싶다면? 	
 ``` sql 
-일자별.	
+-- 일자별.	
 SELECT  DATE_FORMAT(ORDER_DT, '%Y%m%d') YMD  	
         , COUNT(DISTINCT MEM_NO) 구매자수 	
         , SUM(PAYMT_AMT) 매출액   	
@@ -99,7 +99,7 @@ SELECT  YM
 ```	
 11. 환불건 외 각 월의 반품율을 구하고 싶다면. 	
 ``` sql 
-CASE WHEN 사용. 	
+-- CASE WHEN 사용. 	
 SELECT  YM 	
         , COUNT(DISTINCT CASE WHEN CAN_YN='Y' THEN ORDER_NO END) 환불건수
         , COUNT(DISTINCT CASE WHEN CAN_YN='N' THEN ORDER_NO END) 구매건수
