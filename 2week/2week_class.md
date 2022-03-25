@@ -274,3 +274,45 @@ SELECT  GD
                WHEN BIRTH_YY IS NULL THEN '알수없음'			
                ELSE CONCAT(FLOOR((2021 - BIRTH_YY + 1)/10)*10,FLOOR((2021 - BIRTH_YY + 1)/10)*10+10) END			
 ``` 
+
+10. 인천에 살고있거나 인천 매장에서 구매행동을 보였던 적이 있는 회원을 
+타겟으로 추출하고 싶습니다. 
+* UNION ALL, JOIN 사용	
+
+``` sql
+SELECT  DISTINCT MEM_NO 
+  FROM  (  
+        SELECT  DISTINCT MEM_NO 
+          FROM  FSN.FS_MEMBER
+         WHERE  ADDR LIKE '%인천%'
+         
+        UNION ALL 
+        
+        SELECT  DISTINCT MEM_NO 
+          FROM  FSN.FS_SALE A 
+          LEFT 
+          JOIN  FSN.FS_STORE B 
+            ON  A.STORE_ID = B.STORE_ID   
+         WHERE  SIDO = '인천'
+        ) A    
+``` 
+
+11. 온라인에서 가장 많이 팔린 제품 10개와		
+오프라인에서 가장 많이 팔린 제품 10개를 구해주세요. 		
+* UNION ALL이 아닌, ROW_NUMBER 만 사용. 		
+* (HINT, PARTITION BY로 OFF_YN 구분)		
+``` sql
+SELECT  *		
+  FROM  ( 		
+        SELECT  PROD_CD 		
+                , CASE WHEN OFF_YN = 'Y' THEN 'OFFLINE' ELSE 'ONLINE' END GUBUN 		
+                , SUM(SALES_QTY) QTY 		
+                , ROW_NUMBER() OVER(PARTITION BY OFF_YN ORDER BY SUM(SALES_QTY) DESC) RNK 		
+          FROM  FSN.FS_SALE		
+         WHERE  CAN_YN = 'N'		
+         GROUP 		
+            BY  PROD_CD 		
+                , CASE WHEN OFF_YN = 'Y' THEN 'OFFLINE' ELSE 'ONLINE' END		
+        ) A 		
+ WHERE  RNK <= 10 		
+``` 
