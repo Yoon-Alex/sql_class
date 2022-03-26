@@ -21,7 +21,7 @@ SELECT  SUM(ORD_CNT)
   JOIN  FS_STORE B  			
     ON  A.STORE_ID = B.STORE_ID     			
  WHERE  ADDR LIKE '%서울%' 			
-``` sql
+```
 
 * JOIN 활용			
 ``` sql			
