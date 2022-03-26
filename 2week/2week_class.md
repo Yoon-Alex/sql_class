@@ -127,61 +127,63 @@ SELECT  A.*
 #### 3. 2017년 가입한 회원의 첫구매 데이터만 추출하고 싶습니다.			
 ROW_NUMBER()			
 ``` sql			
-SELECT  A.*         			
-  FROM  (       			
-        SELECT  A.*     			
-                , ROW_NUMBER() OVER(PARTITION BY MEM_NO ORDER BY ORDER_DT) RNK  	, ROW_NUMBER() OVER(PARTITION BY MEM_NO ORDER BY ORDER_DT) RNK 		
-          FROM  FS_SALE A       			
-         WHERE  CAN_YN = 'N'        			
-        ) A         			
- WHERE  RNK = 1         			
-``` 			
+SELECT  A.*                     
+  FROM  (                   
+        SELECT  A.*                 
+                , ROW_NUMBER() OVER(PARTITION BY MEM_NO ORDER BY ORDER_DT) RNK      
+          FROM  FS_SALE A                   
+          JOIN  ( 
+                SELECT  DISTINCT MEM_NO 
+                  FROM  FS_MEMBER B 
+                 WHERE  LEFT(JOIN_DT,4) = '2017'        
+                ) B 
+            ON  A.MEM_NO = B.MEM_NO
+         WHERE  CAN_YN = 'N'         
+                AND YY >= '2017'
+        ) A 
+ WHERE  RNK = 1     			
+``` 	
+
 #### 4. 회원들의 첫구매 이후 환불하는 경우가 너무 많다고 합니다. 순주문 (취반품 반영) 기준 첫구매 데이터를 추출해주세요. 			
 -- 순주문 건만 추출하는 방법. 			
 ``` sql			
-SELECT  ORDER_NO 			
-, ORDER_DTL 			
-, MEM_NO 			
-, MIN(ORDER_DT) ORDER_DT			
-, SUM(CASE WHEN CAN_YN = ‘N' THEN SALES_AMT			
-   WHEN CAN_YN = ‘Y' THEN -1 * SALES_AMT END) SALE_AMT			
-  FROM  FS_SALE A 			
- GROUP 			
-    BY  ORDER_NO 			
-, ORDER_DTL 			
-, MEM_NO 			
-HAVING  SUM(CASE WHEN CAN_YN = ‘N' THEN SALES_AMT			
-   		 WHEN CAN_YN = ‘Y' THEN -1 * SALES_AMT END) > 0 	
+SELECT  ORDER_NO            
+        , ORDER_DTL             
+        , MEM_NO            
+        , MIN(ORDER_DT) ORDER_DT            
+        , SUM(CASE WHEN CAN_YN = 'N' THEN SALES_AMT         
+                   WHEN CAN_YN = 'Y' THEN -1 * SALES_AMT END) SALE_AMT          
+  FROM  FS_SALE A           
+ GROUP          
+    BY  ORDER_NO            
+        , ORDER_DTL             
+        , MEM_NO            
+HAVING  SUM(CASE WHEN CAN_YN = 'N' THEN SALES_AMT           
+                 WHEN CAN_YN = 'Y' THEN -1 * SALES_AMT END) > 0 	
 ``` 			
 			
-#### 5. JOIN절로 '순주문' 건만 추출하는 법. 			
-긴 경우, WITH 절 사용하는 방법까지. 	
-
-``` sql			
-SELECT  *			
-  FROM  (			
-        SELECT  A.*			
-                , ROW_NUMBER() OVER(PARTITION BY MEM_NO ORDER BY ORDER_DT) RNK 		
-          FROM  FS_SALE A 			
-          JOIN  ( 			
-                SELECT  ORDER_NO 			
-                        , ORDER_DTL 			
-                        , MEM_NO 			
-                        , MIN(ORDER_DT) ORDER_DT			
-                        , SUM(CASE WHEN CAN_YN = 'N' THEN SALES_AMT			
-                                WHEN CAN_YN = 'Y' THEN -1 * SALES_AMT END) SALE_AMT		
-                FROM  FS_SALE A 			
-                GROUP 			
-                    BY  ORDER_NO 			
-                        , ORDER_DTL 			
-                        , MEM_NO 			
-                HAVING  SUM(CASE WHEN CAN_YN = ‘N' THEN SALES_AMT			
-                        WHEN CAN_YN = ‘Y' THEN -1 * SALES_AMT END) > 0   	
-                ) B 		
-            ON  A.ORDER_NO = B.ORDER_NO 			
-                AND A.ORDER_DTL = B.ORDER_DTL   		
-	    ) A		
- WHERE  RNK = 1 			
+#### 5. JOIN절로 '순주문' 건만 추출하는 법. 				
+``` sql			       
+SELECT  A.*         
+        , ROW_NUMBER() OVER(PARTITION BY MEM_NO ORDER BY ORDER_DT) RNK      
+  FROM  FS_SALE A           
+  JOIN  (           
+        SELECT  ORDER_NO            
+            , ORDER_DTL             
+            , MEM_NO            
+            , MIN(ORDER_DT) ORDER_DT            
+            , SUM(CASE WHEN CAN_YN = 'N' THEN SALES_AMT         
+                   WHEN CAN_YN = 'Y' THEN -1 * SALES_AMT END) SALE_AMT     
+        FROM  FS_SALE A             
+        GROUP           
+            BY  ORDER_NO            
+            , ORDER_DTL             
+            , MEM_NO            
+        HAVING  SUM(CASE WHEN CAN_YN = 'N' THEN SALES_AMT           
+                 WHEN CAN_YN = 'Y' THEN -1 * SALES_AMT END) > 0      
+        ) B         
+    ON  A.ORDER_NO = B.ORDER_NO             
+        AND A.ORDER_DTL = B.ORDER_DTL             		
 ``` 
 
 
@@ -212,8 +214,10 @@ SELECT  JOIN_YM
  WHERE  B.JOIN_YM IS NOT NULL       			
  GROUP      			
     BY  JOIN_YM     			
-        , YM 			
-```  			
+        
+	, YM 			
+```  	
+
 7. 구매전환률까지 구해주세요. 			
 ``` sql			
 SELECT  LEFT(JOIN_DT, 7) JOIN_YM			
@@ -245,35 +249,37 @@ SELECT  A.*
 ``` 			
 
 9. 8번 문제에서 추출한 고객리스트에 고객 정보(FS_MEMBER)를 조합(JOIN)하여 			
-연령대별 분포가 어떻게 되는지 확인 부탁드려요. 			
+연령대별 분포(매출액, 고객수, 주문건수) 확인 부탁드려요. 			
 
 ``` sql
-SELECT  GD			
-        , CASE WHEN (2021 - BIRTH_YY + 1) >= 60 THEN 'OVER60'			
-               WHEN BIRTH_YY IS NULL THEN '알수없음'			
-               ELSE CONCAT(FLOOR((2021 - BIRTH_YY + 1)/10)*10,FLOOR((2021 - BIRTH_YY + 1)/10)*10+10) END AGE			
-        , COUNT(DISTINCT A.MEM_NO) N_MEM			
-  FROM  ( 			
-        SELECT  A.MEM_NO 			
-                , SUM(PAYMT_AMT) PAYMT_AMT			
-                , ROW_NUMBER() OVER(ORDER BY SUM(PAYMT_AMT) DESC) RNK			
-          FROM  FS_SALE A 			
-          JOIN  FS_VVIP B 			
-            ON  A.MEM_NO = B.MEM_NO 			
-         WHERE  YY = '2017'			
-                AND CAN_YN = 'N' 			
-         GROUP 			
-            BY  A.MEM_NO			
-        ) A 			
-  LEFT 			
-  JOIN  FS_MEMBER B 			
-    ON  A.MEM_NO = B.MEM_NO			
- WHERE  RNK <= 100			
- GROUP			
-    BY  GD			
-        , CASE WHEN (2021 - BIRTH_YY + 1) >= 60 THEN 'OVER60'			
-               WHEN BIRTH_YY IS NULL THEN '알수없음'			
-               ELSE CONCAT(FLOOR((2021 - BIRTH_YY + 1)/10)*10,FLOOR((2021 - BIRTH_YY + 1)/10)*10+10) END			
+SELECT  GD          
+        , CASE WHEN (2021 - BIRTH_YY + 1) >= 60 THEN 'OVER60'           
+               WHEN BIRTH_YY IS NULL THEN '알수없음'            
+               ELSE CONCAT(FLOOR((2021 - BIRTH_YY + 1)/10)*10,FLOOR((2021 - BIRTH_YY + 1)/10)*10+10) END AGE            
+        , COUNT(DISTINCT A.MEM_NO) N_MEM            
+        , SUM(PAYMT_AMT) PAYMT_AMT
+  FROM  (           
+        SELECT  A.MEM_NO            
+                , SUM(PAYMT_AMT) PAYMT_AMT     
+                , COUNT(DISTINCT ORDER_NO) ORD_CNT
+                , ROW_NUMBER() OVER(ORDER BY SUM(PAYMT_AMT) DESC) RNK           
+          FROM  FS_SALE A           
+          JOIN  FS_VVIP B           
+            ON  A.MEM_NO = B.MEM_NO             
+         WHERE  YY = '2017'         
+                AND CAN_YN = 'N'            
+         GROUP          
+            BY  A.MEM_NO            
+        ) A             
+  LEFT          
+  JOIN  FS_MEMBER B             
+    ON  A.MEM_NO = B.MEM_NO         
+ WHERE  RNK <= 100          
+ GROUP          
+    BY  GD          
+        , CASE WHEN (2021 - BIRTH_YY + 1) >= 60 THEN 'OVER60'           
+               WHEN BIRTH_YY IS NULL THEN '알수없음'            
+               ELSE CONCAT(FLOOR((2021 - BIRTH_YY + 1)/10)*10,FLOOR((2021 - BIRTH_YY + 1)/10)*10+10) END        	
 ``` 
 
 10. 인천에 살고있거나 인천 매장에서 구매행동을 보였던 적이 있는 회원을 
