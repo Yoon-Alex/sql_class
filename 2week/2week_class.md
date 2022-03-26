@@ -97,33 +97,50 @@ SELECT  SIDO
     BY  SIDO    			
         ,GUN    			
  ORDER  			
-    BY  2 DESC  			
+    BY  2 DESC  
+    
+    
+-- 구매자 수를 COUNT 하는 경우에는 중복이 발생하는지, 기준 확인 후 추출 필요 
+
+SELECT  SIDO               
+        ,GUN                
+        ,COUNT(DISTINCT ORDER_NO) ORD_CNT               
+        ,SUM(SALES_AMT) AMT      
+        ,COUNT(DISTINCT MEM_NO) 
+  FROM  FS_SALE A 
+  LEFT              
+  JOIN  FS_STORE B              
+    ON  A.STORE_ID = B.STORE_ID            
+ WHERE  YM BETWEEN '201601' AND '201612'  
+        AND ADDR LIKE '%서울%'     
+        AND OFF_YN = 'Y'                
+        AND CAN_YN = 'N'                
+ GROUP              
+    BY  SIDO               
+        ,GUN      
+	
 ``` 			
-#### 2. 2017년도 가입하여 바로 당년 탈퇴한 회원의 마지막 구매일을 알고 싶습니다.			
-구매조차 하지 않고 탈퇴한 회원의 비율이 어느정도 되는지 확인해주세요. 			
+#### 2. 2017년도 가입하여 구매조차 하지 않고 탈퇴한 회원의 수를 확인해주세요. 			
 ``` sql			
-SELECT  A.*                 			
-        , B.MAX_DT      			
-  FROM  (               			
-        SELECT  MEM_NO 			
-                , WITHDR_DT 			
-                , WITHDR_GUBN               			
-          FROM  FS_MEMBER A                 			
-         WHERE  WITHDR_GUBN = 'Y'    			
-                AND LEFT(WITHDR_DT, 4) = '2017' 			
-                AND LEFT(JOIN_DT, 4) = '2017'			
-        ) A                 			
-  LEFT              			
-  JOIN  (               			
-        SELECT  MEM_NO              			
-                ,MAX(ORDER_DT) MAX_DT                    			
-          FROM  FS_SALE A               			
-         WHERE  CAN_YN = 'N'                  			
-         GROUP              			
-            BY  MEM_NO              			
-        ) B 			
-    ON  A.MEM_NO = B.MEM_NO 			
+-- 2017년도에 '가입'한 회원, 구매조차 하지 않고 탈퇴한 회원 리스트를 알고 싶습니다. 
+SELECT  COUNT(DISTINCT A.MEM_NO) 
+  FROM  ( 
+        SELECT  * 
+          FROM  FS_MEMBER 
+         WHERE  LEFT(JOIN_DT, 4) = '2017'
+        ) A 
+  LEFT 
+  JOIN  ( 
+        SELECT  DISTINCT MEM_NO 
+          FROM  FS_SALE 
+         WHERE  YY >= '2017'
+                AND CAN_YN = 'N' 
+        ) B 
+    ON  A.MEM_NO = B.MEM_NO 
+ WHERE  WITHDR_GUBN = 'Y' -- 탈퇴
+        AND B.MEM_NO IS NULL         			
 ``` 			
+
 #### 3. 2017년 가입한 회원의 첫구매 데이터만 추출하고 싶습니다.			
 ROW_NUMBER()			
 ``` sql			
@@ -201,8 +218,7 @@ SELECT  JOIN_YM
          GROUP      			
             BY  YM      			
                 , MEM_NO        			
-        ) A         			
-  LEFT      			
+        ) A         			 			
   JOIN  (       			
         SELECT  MEM_NO      			
                 , LEFT(REPLACE(JOIN_DT,'-',''), 6) JOIN_YM      			
@@ -210,15 +226,13 @@ SELECT  JOIN_YM
          WHERE  REPLACE(JOIN_DT, '-', '') BETWEEN '20170101' AND '20171231'     			
         ) B         			
     ON  A.MEM_NO = B.MEM_NO         			
-        AND YM >= JOIN_YM   			
- WHERE  B.JOIN_YM IS NOT NULL       			
+        AND YM >= JOIN_YM   	    			
  GROUP      			
-    BY  JOIN_YM     			
-        
+    BY  JOIN_YM     
 	, YM 			
 ```  	
 
-7. 구매전환률까지 구해주세요. 			
+7. 구매전환률까지 구해주세요. 구매자/ 가입자			
 ``` sql			
 SELECT  LEFT(JOIN_DT, 7) JOIN_YM			
         , COUNT(DISTINCT MEM_NO) JOIN_CUST			
