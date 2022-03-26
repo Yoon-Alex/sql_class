@@ -24,19 +24,13 @@ SELECT  CHNL
         , COUNT(DISTINCT MEM_NO) CUST   
         , COUNT(DISTINCT ORDER_NO) ORD_CNT  
         , SUM(SALES_AMT) SALES_AMT  
-        , SUM(AMT) AMT  
+        , SUM(PAYMT_AMT) PAYMT_AMT  
   FROM  BBY.BABY_SALES  
  WHERE  DATE_FORMAT(ORDER_DT, '%Y') = '2018'    
  GROUP  
-    BY  CHNL    
+    BY  CHNL          
 ```		
-CHNL	고객 수  
-App	89,919  
-Mobile	47,801  
-Web	9,157  
-ㄴ 웹페이지 채널로 접근하는 회원의 고객수가 적고, 구매횟수가 3.5회로 적지 않은 것에 비해.	
-1인당 평균 할인액이 20만원대로 극도로 높은 것으로 나타난다. 	
-해당 이유를 찾고 보완할 수 있는 방법을 찾아야 한다. 	
+
 		
 3. 육아용품의 경우 주말 동안 다쓴 물티슈, 기저귀, 분유를 월요일에 주문하는 경향이 높다고 알려져 있습니다. https://ppss.kr/archives/185928		
  기저귀의 경우 부피가 크고 자주 사용되기 때문입니다. 이 주장이 사실인지 주장하는 분석자료 보고서를 제출해주세요. 		
