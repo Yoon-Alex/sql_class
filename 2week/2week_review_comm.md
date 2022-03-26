@@ -87,6 +87,7 @@ SELECT  A.*
   FROM  ( 
         SELECT  PROD_CD
                 , SUM(QTY) QTY 
+                , ROW_NUMBER() OVER(ORDER BY SUM(QTY) DESC) RNK
           FROM  ( 
                 SELECT  MEM_NO 
                         , COUNT(DISTINCT ORDER_NO) ORD_CNT
@@ -103,4 +104,5 @@ SELECT  A.*
   LEFT 
   JOIN  BBY.BABY_PROD B 
     ON  A.PROD_CD = B.PROD_CD
+ WHERE  RNK <= 10 
 ```     
