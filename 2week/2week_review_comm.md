@@ -86,7 +86,8 @@ SELECT  A.*
         , B.* 
   FROM  ( 
         SELECT  PROD_CD
-                , SUM(QTY) QTY 
+                , SUM(QTY) QTY
+                , (SUM(SALES_AMT) - SUM(PAYMT_AMT)) / SUM(SALES_AMT) DISC
                 , ROW_NUMBER() OVER(ORDER BY SUM(QTY) DESC) RNK
           FROM  ( 
                 SELECT  MEM_NO 
@@ -106,3 +107,4 @@ SELECT  A.*
     ON  A.PROD_CD = B.PROD_CD
  WHERE  RNK <= 10 
 ```     
+
