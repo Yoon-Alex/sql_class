@@ -301,7 +301,7 @@ SELECT  DISTINCT MEM_NO
 11. 온라인에서 가장 많이 팔린 제품 10개와		
 오프라인에서 가장 많이 팔린 제품 10개를 구해주세요. 		
 * UNION ALL이 아닌, ROW_NUMBER 만 사용. 		
-* (HINT, PARTITION BY로 OFF_YN 구분)		
+* HINT (PARTITION BY로 OFF_YN 구분)		
 ``` sql
 SELECT  *		
   FROM  ( 		
