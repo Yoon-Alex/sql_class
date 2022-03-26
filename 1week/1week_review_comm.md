@@ -59,17 +59,18 @@ SELECT  DAYS
 
 4. 온라인 주문의 경우 시간대에 대한 특징이 발생하나요? 어떤 시간에 광고를 해야 더욱 효과적인 결과를 이끌어낼지 분석 요청드려요.
 ``` sql  		
-SELECT  HOUR 		
-        , AVG(ORD_CNT) AVG_CNT		
-  FROM  ( 		
-        SELECT  DATE_FORMAT(ORDER_DT, '%H') HOUR 		
-                ,DATE_FORMAT(ORDER_DT, '%Y%m%d') YMD 		
-                ,COUNT(DISTINCT ORDER_NO) ORD_CNT     		
-          FROM  BBY.BABY_SALES A		
-         GROUP 		
-            BY  DATE_FORMAT(ORDER_DT, '%H') 		
-                ,DATE_FORMAT(ORDER_DT, '%Y%m%d')		
-        ) A 		
- GROUP 		
+SELECT  HOUR        
+        , AVG(ORD_CNT) AVG_CNT      
+  FROM  (       
+        SELECT  DATE_FORMAT(ORDER_DT, '%H') HOUR        
+                ,DATE_FORMAT(ORDER_DT, '%Y%m%d') YMD        
+                ,COUNT(DISTINCT ORDER_NO) ORD_CNT   
+          FROM  BBY.BABY_SALES A        
+         WHERE  A.CHNL IN ('App','Web')
+         GROUP      
+            BY  DATE_FORMAT(ORDER_DT, '%H')         
+                ,DATE_FORMAT(ORDER_DT, '%Y%m%d')        
+        ) A         
+ GROUP      
     BY  HOUR
 ``` 
