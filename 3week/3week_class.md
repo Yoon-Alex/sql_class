@@ -139,7 +139,6 @@ SELECT  MEM_NO
  GROUP
     BY  MEM_NO      
 )
-CASE WHEN RNK > 10 THEN 'ETC' ELSE PROD_CD END    
 SELECT  B.CL_NM     
         , PROD_CTGR1    
         , SUM(QTY) QTY  
@@ -208,7 +207,8 @@ SELECT  A.MEM_NO
     
 6. 지금 브랜드의 첫구매 이후 재구매 전환이 일어나도록 유도하려고 합니다. 
 기존 회원의 첫구매 후 두번째 구매까지 걸리는 평균 소요시간(일)을 연령별로 나타내어 캠페인 기획에 활용하려 합니다. 
-
+FS_ORD_RNK : 주문번호, 구매자를 구매 순서(RNK)에 따라서 정리한 테이블  
+테이블 확인 후 작업해주세요. 
 ``` sql    
 SELECT  A.* 
         , TIMESTAMPDIFF(DAY, FST_DT, SEC_DT)    
@@ -216,23 +216,7 @@ SELECT  A.*
         SELECT  A.MEM_NO    
                 , MAX(CASE WHEN RNK = 1 THEN ORDER_DT END) FST_DT   
                 , MAX(CASE WHEN RNK = 2 THEN ORDER_DT END) SEC_DT   
-          FROM  (   
-                SELECT  MEM_NO  
-                        , ORDER_NO  
-                        , ORDER_DT  
-                        , ROW_NUMBER() OVER(PARTITION BY MEM_NO ORDER BY ORDER_DT ASC) RNK  
-                  FROM  (   
-                        SELECT  MEM_NO  
-                                , ORDER_NO      
-                                , ORDER_DT  
-                          FROM  FS_SALE     
-                         WHERE  CAN_YN = 'N'    
-                         GROUP  
-                            BY  MEM_NO  
-                                , ORDER_NO  
-                                , ORDER_DT  
-                        ) A                     
-                ) A     
+          FROM  FS_ORD_RNK A     
           JOIN  (   
                 SELECT  MEM_NO  
                         , COUNT(DISTINCT ORDER_NO) ORD_CNT  
@@ -248,8 +232,6 @@ SELECT  A.*
             BY  A.MEM_NO    
         ) A     
 ```     
-
-
 
 7. 2018년도 1월 1일 기준으로 작년(2017년도) 한해 모든 회원의 Recency, Frequency, Monetary을 구해주세요.  
 최근성 : 마지막 구매일   
