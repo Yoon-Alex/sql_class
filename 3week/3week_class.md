@@ -17,6 +17,7 @@ SELECT  A.*
   JOIN  FST_ORD B 
     ON  A.MEM_NO = B.MEM_NO 
         AND A.YMD = MN_ORD_DT 
+ WHERE  CAN_YN = 'N' 
 ;            
 ``` 
 
