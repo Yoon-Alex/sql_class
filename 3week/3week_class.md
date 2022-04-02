@@ -87,8 +87,9 @@ SELECT  MEM_NO
  GROUP
     BY  MEM_NO           
 )   
-SELECT  A.*     
-        , CASE WHEN RNK > 10 THEN 'ETC' ELSE PROD_CD END    
+SELECT  CASE WHEN RNK > 10 THEN 'ETC' ELSE PROD_CD END PROD_CD
+        , CASE WHEN RNK > 10 THEN 'OVER10' ELSE RNK END RNK
+        , SUM(QTY) QTY 
         , '오프라인'    
   FROM  (   
         SELECT  PROD_CD     
@@ -106,12 +107,16 @@ SELECT  A.*
             BY  PROD_CD 
         ) A 
  WHERE  RNK <= 100  
+ GROUP
+    BY  CASE WHEN RNK > 10 THEN 'ETC' ELSE PROD_CD END 
+        , CASE WHEN RNK > 10 THEN 'OVER10' ELSE RNK END 
     
 UNION ALL   
 
-SELECT  A.*     
-        , CASE WHEN RNK > 10 THEN 'ETC' ELSE PROD_CD END    
-        , '온라인' 
+SELECT  CASE WHEN RNK > 10 THEN 'ETC' ELSE PROD_CD END PROD_CD
+        , CASE WHEN RNK > 10 THEN 'OVER10' ELSE RNK END RNK
+        , SUM(QTY) QTY 
+        , '온라인'    
   FROM  (   
         SELECT  PROD_CD     
                 , SUM(SALES_QTY) QTY    
@@ -128,6 +133,9 @@ SELECT  A.*
             BY  PROD_CD 
         ) A 
  WHERE  RNK <= 100  
+ GROUP
+    BY  CASE WHEN RNK > 10 THEN 'ETC' ELSE PROD_CD END 
+        , CASE WHEN RNK > 10 THEN 'OVER10' ELSE RNK END 
 ```     
  
 3. 2017년 1월에 첫구매로 구매한 상품 리스트를 상품 카테고리 별로 나타내주세요. 어떤 카테고리의 상품이 잘팔렸나요? FS_PROD    
