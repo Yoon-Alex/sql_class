@@ -293,4 +293,5 @@ SELECT  DISTINCT MEM_NO
  WHERE  1=1     
         AND WPGE_ID = '2'   
         AND RNK = 1     
+        AND SRES_NO = '1'
 ```         
