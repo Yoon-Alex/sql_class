@@ -263,7 +263,7 @@ SELECT  MEM_NO
 각각 R, F, M의 점수로 순위를 매긴 데이터를 추출하는 쿼리를 작성해주세요.    
 ``` sql    
 SELECT  A.*     
-        , ROW_NUMBER() OVER(ORDER BY R DESC) R_RNK  
+        , ROW_NUMBER() OVER(ORDER BY R ASC) R_RNK  
         , ROW_NUMBER() OVER(ORDER BY F DESC) F_RNK  
         , ROW_NUMBER() OVER(ORDER BY M DESC) M_RNK  
   FROM  (   
