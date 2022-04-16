@@ -24,7 +24,7 @@ SELECT  YMD
                 , 0 REST_MEM
           FROM  FS_WLOG 
          WHERE  1=1 
-                AND YM = '201802'
+                AND YM = LEFT('20180201',6)
                 AND YMD <= '20180201' 
          GROUP
             BY  YMD 
@@ -42,7 +42,7 @@ SELECT  YMD
                 , 0 REST_MEM        
           FROM  FS_SALE
          WHERE  1=1 
-                AND YM = '201802'
+                AND YM = LEFT('20180201',6)
                 AND YMD = '20180201'
          GROUP
             BY  YMD 
@@ -129,7 +129,7 @@ SELECT  YMD
                 , 0 REST_MEM
           FROM  FS_WLOG 
          WHERE  1=1 
-                AND YM = '201802'
+                AND YM = LEFT('20180201',6)
                 AND YMD <= '20180201' 
          GROUP
             BY  YMD 
@@ -147,7 +147,7 @@ SELECT  YMD
                 , 0 REST_MEM        
           FROM  FS_SALE
          WHERE  1=1 
-                AND YM = '201802'
+                AND YM = LEFT('20180201',6)
                 AND YMD = '20180201'
          GROUP
             BY  YMD 
@@ -244,7 +244,7 @@ SELECT  YMD
                 , 0 REST_MEM
           FROM  FS_WLOG 
          WHERE  1=1 
-                AND YM = '201802'
+                AND YM = LEFT(V_STD_DT, 6)
                 AND YMD <= V_STD_DT 
          GROUP
             BY  YMD 
@@ -262,7 +262,7 @@ SELECT  YMD
                 , 0 REST_MEM        
           FROM  FS_SALE
          WHERE  1=1 
-                AND YM = '201802'
+                AND YM = LEFT(V_STD_DT, 6)
                 AND YMD = V_STD_DT
          GROUP
             BY  YMD 
