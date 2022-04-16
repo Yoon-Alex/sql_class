@@ -60,7 +60,7 @@ SELECT  YMD
                 , 0 REST_MEM     
           FROM  FS_MEMBER 
          WHERE  1=1 
-                AND DATE_FORMAT(STR_TO_DATE(JOIN_DT, '%Y-%m-%d'), '%Y%m%d') = '20180201'
+                AND REPLACE(JOIN_DT, '-', '') = '20180201'
          GROUP
             BY  REPLACE(JOIN_DT, '-', '')
             
@@ -165,7 +165,7 @@ SELECT  YMD
                 , 0 REST_MEM     
           FROM  FS_MEMBER 
          WHERE  1=1 
-                AND DATE_FORMAT(STR_TO_DATE(JOIN_DT, '%Y-%m-%d'), '%Y%m%d') = '20180201'
+                AND REPLACE(JOIN_DT, '-', '') = '20180201'
          GROUP
             BY  REPLACE(JOIN_DT, '-', '')
             
@@ -279,7 +279,7 @@ SELECT  YMD
                 , 0 REST_MEM     
           FROM  FS_MEMBER 
          WHERE  1=1 
-                AND DATE_FORMAT(STR_TO_DATE(JOIN_DT, '%Y-%m-%d'), '%Y%m%d') = V_STD_DT
+                AND REPLACE(JOIN_DT, '-', '') = V_STD_DT
          GROUP
             BY  REPLACE(JOIN_DT, '-', '')
             
