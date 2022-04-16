@@ -13,7 +13,7 @@ SELECT  YMD
         , MAX(WITHDR_MEM) WITHDR_MEM
         , MAX(REST_MEM) REST_MEM
   FROM  ( 
-        SELECT  YMD 
+        SELECT  '20180201' YMD
                 , COUNT(DISTINCT CASE WHEN YMD = '20180201' THEN MEM_NO END) UV
                 , COUNT(DISTINCT MEM_NO) MAU 
                 , 0 CUST        
@@ -27,7 +27,7 @@ SELECT  YMD
                 AND YM = LEFT('20180201',6)
                 AND YMD <= '20180201' 
          GROUP
-            BY  YMD 
+            BY  '20180201'  
             
         UNION ALL 
         
@@ -49,7 +49,7 @@ SELECT  YMD
         
         UNION ALL 
         
-        SELECT  DATE_FORMAT(STR_TO_DATE(JOIN_DT, '%Y-%m-%d'), '%Y%m%d') YMD
+        SELECT  REPLACE(JOIN_DT, '-', '') YMD
                 , 0 UV        
                 , 0 MAU 
                 , 0 CUST
@@ -62,7 +62,7 @@ SELECT  YMD
          WHERE  1=1 
                 AND DATE_FORMAT(STR_TO_DATE(JOIN_DT, '%Y-%m-%d'), '%Y%m%d') = '20180201'
          GROUP
-            BY  DATE_FORMAT(STR_TO_DATE(JOIN_DT, '%Y-%m-%d'), '%Y%m%d') 
+            BY  REPLACE(JOIN_DT, '-', '')
             
         UNION ALL 
         
@@ -118,7 +118,7 @@ SELECT  YMD
         , MAX(WITHDR_MEM) WITHDR_MEM
         , MAX(REST_MEM) REST_MEM
   FROM  ( 
-        SELECT  YMD 
+        SELECT  '20180201' YMD
                 , COUNT(DISTINCT CASE WHEN YMD = '20180201' THEN MEM_NO END) UV
                 , COUNT(DISTINCT MEM_NO) MAU 
                 , 0 CUST        
@@ -132,7 +132,7 @@ SELECT  YMD
                 AND YM = LEFT('20180201',6)
                 AND YMD <= '20180201' 
          GROUP
-            BY  YMD 
+            BY  '20180201'  
             
         UNION ALL 
         
@@ -154,7 +154,7 @@ SELECT  YMD
         
         UNION ALL 
         
-        SELECT  '20180201' YMD
+        SELECT  REPLACE(JOIN_DT, '-', '') YMD
                 , 0 UV        
                 , 0 MAU 
                 , 0 CUST
@@ -165,9 +165,9 @@ SELECT  YMD
                 , 0 REST_MEM     
           FROM  FS_MEMBER 
          WHERE  1=1 
-                AND REPLACE(JOIN_DT, '-', '') = '20180201'
+                AND DATE_FORMAT(STR_TO_DATE(JOIN_DT, '%Y-%m-%d'), '%Y%m%d') = '20180201'
          GROUP
-            BY  '20180201'
+            BY  REPLACE(JOIN_DT, '-', '')
             
         UNION ALL 
         
@@ -231,9 +231,8 @@ SELECT  YMD
         , MAX(JOIN_MEM) JOIN_MEM
         , MAX(WITHDR_MEM) WITHDR_MEM
         , MAX(REST_MEM) REST_MEM
-        , CURRENT_DATE LOAD_DT
   FROM  ( 
-        SELECT  YMD 
+        SELECT  V_STD_DT YMD
                 , COUNT(DISTINCT CASE WHEN YMD = V_STD_DT THEN MEM_NO END) UV
                 , COUNT(DISTINCT MEM_NO) MAU 
                 , 0 CUST        
@@ -244,10 +243,10 @@ SELECT  YMD
                 , 0 REST_MEM
           FROM  FS_WLOG 
          WHERE  1=1 
-                AND YM = LEFT(V_STD_DT, 6)
+                AND YM = LEFT(V_STD_DT,6)
                 AND YMD <= V_STD_DT 
          GROUP
-            BY  YMD 
+            BY  V_STD_DT  
             
         UNION ALL 
         
@@ -262,14 +261,14 @@ SELECT  YMD
                 , 0 REST_MEM        
           FROM  FS_SALE
          WHERE  1=1 
-                AND YM = LEFT(V_STD_DT, 6)
+                AND YM = LEFT(V_STD_DT,6)
                 AND YMD = V_STD_DT
          GROUP
             BY  YMD 
         
         UNION ALL 
         
-        SELECT  V_STD_DT YMD
+        SELECT  REPLACE(JOIN_DT, '-', '') YMD
                 , 0 UV        
                 , 0 MAU 
                 , 0 CUST
@@ -280,9 +279,9 @@ SELECT  YMD
                 , 0 REST_MEM     
           FROM  FS_MEMBER 
          WHERE  1=1 
-                AND REPLACE(JOIN_DT, '-', '') = V_STD_DT
+                AND DATE_FORMAT(STR_TO_DATE(JOIN_DT, '%Y-%m-%d'), '%Y%m%d') = V_STD_DT
          GROUP
-            BY  V_STD_DT
+            BY  REPLACE(JOIN_DT, '-', '')
             
         UNION ALL 
         
