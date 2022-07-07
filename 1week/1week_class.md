@@ -53,7 +53,6 @@ SELECT  DATE_FORMAT(ORDER_DT, '%Y%m%d') YMD
         , COUNT(DISTINCT ORDER_NO) 주문건수    	
   FROM  FS_SALE	
  WHERE  DATE_FORMAT(ORDER_DT, '%Y%m%d' ) BETWEEN '20180128' AND '20180130'  	
-        AND CAN_YN = 'N' 	
  GROUP 	
     BY  DATE_FORMAT(ORDER_DT, '%Y%m%d') 	
 ```	
