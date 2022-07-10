@@ -33,8 +33,7 @@ SELECT  SUM(ORD_CNT)
                 ,SUM(PAYMT_AMT) AMT 			
           FROM  FS_SALE 			
          WHERE  YY = '2021'   			
-                AND OFF_YN = 'Y'    			
-                AND CAN_YN = 'N'    			
+                AND OFF_YN = 'Y'    			   			
          GROUP  			
             BY  STORE_ID    			
         ) A     			
@@ -58,8 +57,7 @@ SELECT  SIDO
                 ,SUM(PAYMT_AMT) AMT 			
           FROM  FS_SALE 			
          WHERE  YY = '2021'   		
-                AND OFF_YN = 'Y'    			
-                AND CAN_YN = 'N'    			
+                AND OFF_YN = 'Y'    			 			
          GROUP  			
             BY  STORE_ID    			
         ) A     			
@@ -83,8 +81,7 @@ SELECT  SIDO
                 ,SUM(PAYMT_AMT) AMT 			
           FROM  FS_SALE 			
          WHERE  YY = '2021'   			
-                AND OFF_YN = 'Y'    			
-                AND CAN_YN = 'N'    			
+                AND OFF_YN = 'Y'    			    			
          GROUP  			
             BY  STORE_ID    			
         ) A     			
