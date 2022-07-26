@@ -109,8 +109,7 @@ SELECT  SIDO
     ON  A.STORE_ID = B.STORE_ID            
  WHERE  YY = '2021'   
         AND ADDR LIKE '%서울%'     
-        AND OFF_YN = 'Y'                
-        AND CAN_YN = 'N'                
+        AND OFF_YN = 'Y'             
  GROUP              
     BY  SIDO               
         ,GUN      
