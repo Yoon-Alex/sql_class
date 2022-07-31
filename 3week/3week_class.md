@@ -8,7 +8,6 @@ WITH FST_ORD AS (
 SELECT  MEM_NO 
         , MIN(YMD) MN_ORD_DT
   FROM  FS_SALE     
- WHERE  CAN_YN = 'N'
  GROUP
     BY  MEM_NO
 )
@@ -17,7 +16,6 @@ SELECT  A.*
   JOIN  FST_ORD B 
     ON  A.MEM_NO = B.MEM_NO 
         AND A.YMD = MN_ORD_DT 
- WHERE  CAN_YN = 'N' 
 ;            
 ``` 
 
@@ -31,7 +29,6 @@ WITH FST_ORD AS (
 SELECT  MEM_NO 
         , MIN(YMD) MN_ORD_DT
   FROM  FS_SALE     
- WHERE  CAN_YN = 'N'
  GROUP
     BY  MEM_NO
 )   
@@ -46,8 +43,7 @@ SELECT  A.*
             ON  A.MEM_NO = B.MEM_NO     
                 AND A.YMD = B.MN_ORD_DT   
          WHERE  1=1     
-                AND YM BETWEEN '201801' AND '201806'    
-                AND CAN_YN = 'N'    
+                AND YM BETWEEN '201801' AND '201806'
                 AND OFF_YN = 'Y'    
          GROUP  
             BY  PROD_CD 
@@ -67,8 +63,7 @@ SELECT  A.*
             ON  A.MEM_NO = B.MEM_NO     
                 AND A.YMD = B.MN_ORD_DT   
          WHERE  1=1     
-                AND YM BETWEEN '201801' AND '201806'    
-                AND CAN_YN = 'N'    
+                AND YM BETWEEN '201801' AND '201806'
                 AND OFF_YN = 'N'    
          GROUP  
             BY  PROD_CD 
@@ -138,13 +133,12 @@ SELECT  CASE WHEN RNK > 10 THEN 'ETC' ELSE PROD_CD END PROD_CD
         , CASE WHEN RNK > 10 THEN 'OVER10' ELSE RNK END 
 ```     
  
-3. 2017년 1월에 첫구매로 구매한 상품 리스트를 상품 카테고리 별로 나타내주세요. 어떤 카테고리의 상품이 잘팔렸나요? FS_PROD    
+3. 2019년 1월에 첫구매로 구매한 상품 리스트를 상품 카테고리 별로 나타내주세요. 어떤 카테고리의 상품이 잘팔렸나요? FS_PROD    
 ``` sql
 WITH FST_ORD AS (   
 SELECT  MEM_NO 
         , MIN(YMD) MN_ORD_DT
   FROM  FS_SALE     
- WHERE  CAN_YN = 'N'
  GROUP
     BY  MEM_NO      
 )
@@ -156,11 +150,10 @@ SELECT  B.CL_NM
                 , SUM(SALES_QTY) QTY    
           FROM  FS_SALE A   
           JOIN  FST_ORD B   
-            ON  A.ORDER_NO = B.ORDER_NO     
-                AND A.ORDER_DTL = B.ORDER_DTL   
+            ON  A.MEM_NO = B.MEM_NO     
+                AND A.YMD = B.MN_ORD_DT   
          WHERE  1=1     
-                AND YM = '201701'   
-                AND CAN_YN = 'N'    
+                AND YM = '201901'   
          GROUP  
             BY  PROD_CD 
         ) A     
@@ -175,8 +168,8 @@ SELECT  B.CL_NM
 ```  
     
 
-4. 'e60f926bc809c75a','679108598ef1d2cd','dd9a3cbbb2863566’ 상품은 당시 첫구매 쿠폰을 제공한 상품입니다.   
-이 상품을 해당월(2017년 01월) 구매했던 회원들이 그 후 1년간 (2017년 2월 ~ 2018년 1월)까지의 거래액, 구매객을 확인하고 싶습니다.    
+4. '03479f39279fa516','edd1c63f5cfac0dc','04019ccd24df042f' 상품은 당시 첫구매 쿠폰을 제공한 상품입니다.   
+이 상품을 해당월(2019년 01월) 구매했던 회원들이 그 후 1년간 (2019년 2월 ~ 2020년 1월)까지의 거래액, 구매객을 확인하고 싶습니다.    
 즉, 2017년 01월에 시행한 캠페인의 효과를 LTV의 개념으로 측정하고 싶습니다.     
 
 ``` sql    
@@ -187,13 +180,11 @@ SELECT  COUNT(DISTINCT A.MEM_NO)
         SELECT  DISTINCT MEM_NO 
           FROM  FS_SALE     
          WHERE  1=1     
-                AND YM = '201701'   
-                AND CAN_YN = 'N'    
-                AND PROD_CD IN ('e60f926bc809c75a','679108598ef1d2cd','dd9a3cbbb2863566')   
+                AND YM = '201901'   
+                AND PROD_CD IN ('03479f39279fa516','edd1c63f5cfac0dc','04019ccd24df042f')   
         ) B     
     ON  A.MEM_NO = B.MEM_NO     
- WHERE  YM BETWEEN '201702' AND '201801'    
-        AND CAN_YN = 'N'    
+ WHERE  YM BETWEEN '201902' AND '202001'
 ;     
 ``` 
 
@@ -209,52 +200,49 @@ SELECT  A.MEM_NO
   JOIN  FS_VVIP B   
     ON  A.MEM_NO = B.MEM_NO     
  WHERE  YM >= '201801'  
-        AND CAN_YN  = 'N'   
  GROUP  
-    BY  A.MEM_NO    
+    BY  A.MEM_NO  
 ``` 
     
 6. 지금 브랜드의 첫구매 이후 재구매 전환이 일어나도록 유도하려고 합니다. 
 기존 회원의 첫구매 후 두번째 구매까지 걸리는 평균 소요시간(일)을 연령별로 나타내어 캠페인 기획에 활용하려 합니다. 
 FS_ORD_RNK : 주문번호, 구매자를 구매 순서(RNK)에 따라서 정리한 테이블  
-테이블 확인 후 작업해주세요. 
+위 테이블을 활용해서 mem_no 별 2번째 구매까지 걸린 시간을 나타내는 데이터를 추출해주세요. 
 ``` sql    
 SELECT  A.* 
-        , TIMESTAMPDIFF(DAY, FST_DT, SEC_DT)    
+        , TIMESTAMPDIFF(DAY, FST_DT, SEC_DT) N2N1
   FROM  (   
         SELECT  A.MEM_NO    
-                , MAX(CASE WHEN RNK = 1 THEN ORDER_DT END) FST_DT   
-                , MAX(CASE WHEN RNK = 2 THEN ORDER_DT END) SEC_DT   
+                , MAX(CASE WHEN ORD_RNK = 1 THEN ORDER_DT END) FST_DT   
+                , MAX(CASE WHEN ORD_RNK = 2 THEN ORDER_DT END) SEC_DT   
           FROM  FS_ORD_RNK A     
           JOIN  (   
                 SELECT  MEM_NO  
                         , COUNT(DISTINCT ORDER_NO) ORD_CNT  
-                  FROM  FS_SALE     
-                 WHERE  CAN_YN = 'N'    
+                  FROM  FS_SALE        
                  GROUP  
                     BY  MEM_NO  
                 HAVING  COUNT(DISTINCT ORDER_NO) >= 2   
                 ) B     
             ON  A.MEM_NO = B.MEM_NO     
-         WHERE  RNK <= 2    
+         WHERE  ORD_RNK <= 2    
          GROUP  
             BY  A.MEM_NO    
-        ) A     
+        ) A    
 ```     
 
-7. 2018년도 1월 1일 기준으로 작년(2017년도) 한해 모든 회원의 Recency, Frequency, Monetary을 구해주세요.  
+7. 2021년도 1월 1일 기준으로 작년(2020년도) 한해 모든 회원의 Recency, Frequency, Monetary을 구해주세요.  
 최근성 : 마지막 구매일   
 빈도 : 구매빈도   
 금액 : 구매금액       
 ``` sql        
 SELECT  MEM_NO  
-        , TIMESTAMPDIFF(DAY, MAX(ORDER_DT), STR_TO_DATE('20180101', '%Y%m%d')) R    
+        , TIMESTAMPDIFF(DAY, MAX(ORDER_DT), STR_TO_DATE('20210101', '%Y%m%d')) R    
         , COUNT(DISTINCT ORDER_NO) F    
         , SUM(PAYMT_AMT) M  
   FROM  FS_SALE     
- WHERE  1=1     
-        AND CAN_YN = 'N'    
-        AND YM BETWEEN '201712' AND '201712'    
+ WHERE  1=1       
+        AND YY = '2020'    
  GROUP  
     BY  MEM_NO  
 ``` 
@@ -268,16 +256,15 @@ SELECT  A.*
         , ROW_NUMBER() OVER(ORDER BY M DESC) M_RNK  
   FROM  (   
         SELECT  MEM_NO  
-                , TIMESTAMPDIFF(DAY, MAX(ORDER_DT), STR_TO_DATE('20180101', '%Y%m%d')) R    
+                , TIMESTAMPDIFF(DAY, MAX(ORDER_DT), STR_TO_DATE('20210101', '%Y%m%d')) R     
                 , COUNT(DISTINCT ORDER_NO) F    
                 , SUM(PAYMT_AMT) M  
           FROM  FS_SALE     
          WHERE  1=1     
-                AND CAN_YN = 'N'    
-                AND YM BETWEEN '201712' AND '201712'    
+                AND YY = '2020'    
          GROUP  
             BY  MEM_NO  
-        ) A     
+        ) A  
 ``` 
 
 9. 홈(2번 페이지)에서 바로 이탈하는 회원들을 대상으로 구매 전환을 유도하기 위해 쿠폰 캠페인을 진행하려고 합니다.  
