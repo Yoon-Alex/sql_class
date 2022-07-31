@@ -43,7 +43,7 @@ SELECT  A.*
             ON  A.MEM_NO = B.MEM_NO     
                 AND A.YMD = B.MN_ORD_DT   
          WHERE  1=1     
-                AND YM BETWEEN '201801' AND '201806'
+                AND YY = '2018'
                 AND OFF_YN = 'Y'    
          GROUP  
             BY  PROD_CD 
@@ -63,7 +63,7 @@ SELECT  A.*
             ON  A.MEM_NO = B.MEM_NO     
                 AND A.YMD = B.MN_ORD_DT   
          WHERE  1=1     
-                AND YM BETWEEN '201801' AND '201806'
+                AND YY = '2018'
                 AND OFF_YN = 'N'    
          GROUP  
             BY  PROD_CD 
@@ -95,7 +95,7 @@ SELECT  CASE WHEN RNK > 10 THEN 'ETC' ELSE PROD_CD END PROD_CD
             ON  A.MEM_NO = B.MEM_NO     
                 AND A.YMD = B.MN_ORD_DT   
          WHERE  1=1     
-                AND YM BETWEEN '201801' AND '201806'    
+                AND YY = '2018'
                 AND CAN_YN = 'N'    
                 AND OFF_YN = 'Y'    
          GROUP  
@@ -121,7 +121,7 @@ SELECT  CASE WHEN RNK > 10 THEN 'ETC' ELSE PROD_CD END PROD_CD
             ON  A.MEM_NO = B.MEM_NO     
                 AND A.YMD = B.MN_ORD_DT   
          WHERE  1=1     
-                AND YM BETWEEN '201801' AND '201806'    
+                AND YY = '2018' 
                 AND CAN_YN = 'N'    
                 AND OFF_YN = 'N'    
          GROUP  
