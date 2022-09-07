@@ -75,12 +75,12 @@ SELECT  A.*
 2. 10위 이후의 상품은 ‘ETC’로 표현하고 싶습니다.    
 ``` sql
 WITH FST_ORD AS (   
+-- 첫구매 리스트만 사용하고 싶다면.  
 SELECT  MEM_NO 
         , MIN(YMD) MN_ORD_DT
   FROM  FS_SALE     
- WHERE  CAN_YN = 'N'
  GROUP
-    BY  MEM_NO           
+    BY  MEM_NO
 )   
 SELECT  CASE WHEN RNK > 10 THEN 'ETC' ELSE PROD_CD END PROD_CD
         , CASE WHEN RNK > 10 THEN 'OVER10' ELSE RNK END RNK
@@ -96,22 +96,21 @@ SELECT  CASE WHEN RNK > 10 THEN 'ETC' ELSE PROD_CD END PROD_CD
                 AND A.YMD = B.MN_ORD_DT   
          WHERE  1=1     
                 AND YY = '2018'
-                AND CAN_YN = 'N'    
                 AND OFF_YN = 'Y'    
          GROUP  
             BY  PROD_CD 
         ) A 
- WHERE  RNK <= 100  
+ WHERE  RNK <= 100
  GROUP
-    BY  CASE WHEN RNK > 10 THEN 'ETC' ELSE PROD_CD END 
+ 	BY  CASE WHEN RNK > 10 THEN 'ETC' ELSE PROD_CD END 
         , CASE WHEN RNK > 10 THEN 'OVER10' ELSE RNK END 
-    
+        
 UNION ALL   
-
+    
 SELECT  CASE WHEN RNK > 10 THEN 'ETC' ELSE PROD_CD END PROD_CD
         , CASE WHEN RNK > 10 THEN 'OVER10' ELSE RNK END RNK
         , SUM(QTY) QTY 
-        , '온라인'    
+        , '온라인' 
   FROM  (   
         SELECT  PROD_CD     
                 , SUM(SALES_QTY) QTY    
@@ -121,15 +120,14 @@ SELECT  CASE WHEN RNK > 10 THEN 'ETC' ELSE PROD_CD END PROD_CD
             ON  A.MEM_NO = B.MEM_NO     
                 AND A.YMD = B.MN_ORD_DT   
          WHERE  1=1     
-                AND YY = '2018' 
-                AND CAN_YN = 'N'    
+                AND YY = '2018'
                 AND OFF_YN = 'N'    
          GROUP  
             BY  PROD_CD 
         ) A 
- WHERE  RNK <= 100  
+ WHERE  RNK <= 100
  GROUP
-    BY  CASE WHEN RNK > 10 THEN 'ETC' ELSE PROD_CD END 
+ 	BY  CASE WHEN RNK > 10 THEN 'ETC' ELSE PROD_CD END 
         , CASE WHEN RNK > 10 THEN 'OVER10' ELSE RNK END 
 ```     
  
