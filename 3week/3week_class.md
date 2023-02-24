@@ -266,13 +266,13 @@ SELECT  A.*
 ``` 
 
 9. 홈(2번 페이지)에서 바로 이탈하는 회원들을 대상으로 구매 전환을 유도하기 위해 쿠폰 캠페인을 진행하려고 합니다.  
-2018년 2월 1일 홈에서 이탈한 회원 리스트를 추출해주세요.    
+2020년 2월 1일 홈에서 이탈한 회원 리스트를 추출해주세요.    
 ``` sql    
 SELECT  DISTINCT MEM_NO 
   FROM  (   
         SELECT  A.* 
                 , ROW_NUMBER() OVER(PARTITION BY SESSION_ID ORDER BY SRES_NO DESC) RNK  
-          FROM  FS_WLOG_TMP A   
+          FROM  FS_WLOG_MST A   
          WHERE  YM = '20180201'   
         ) A     
  WHERE  1=1     
@@ -280,3 +280,109 @@ SELECT  DISTINCT MEM_NO
         AND RNK = 1     
         AND SRES_NO = '1'
 ```         
+
+10. 2020년 5월 일자별 DAU를 구해주세요. 
+``` sql    
+SELECT  SUBSTR(SESSON_ID, 1,8) YMD 
+        , COUNT(DISTINCT MEM_NO) DAU 
+  FROM  FSN.FS_WLOG_MST
+ WHERE  DATE_FORMAT(SRCH_DT, '%Y%m')= '202005'
+ GROUP
+    BY  SUBSTR(SESSON_ID, 1,8) 
+```       
+
+
+11. 2020년 1월 일자별 PV를 구해주세요.  
+``` sql    
+SELECT  SUBSTR(SESSON_ID, 1,8) YMD 
+        , SUM(1)
+  FROM  FSN.FS_WLOG_MST  
+ GROUP
+    BY  SUBSTR(SESSON_ID, 1,8)
+```       
+
+
+12. 2020년 1월 일자별 UV, PV, SV를 구해주세요.  
+``` sql    
+SELECT  SUBSTR(SESSON_ID, 1,8) YMD 
+        , COUNT(DISTINCT MEM_NO) UV
+        , SUM(1) PV 
+        , COUNT(DISTINCT SESSON_ID) SV 
+  FROM  FSN.FS_WLOG_MST  
+ WHERE  DATE_FORMAT(SRCH_DT, '%Y%m')= '202001'
+ GROUP
+    BY  SUBSTR(SESSON_ID, 1,8)
+```       
+
+
+13. 2020년 1월, 세션 당 페이지에 머문시간을 알고싶습니다. (세션 당 평균 체류시간)
+``` sql    
+SELECT  COUNT(DISTINCT SESSON_ID) SV 
+        , SUM(DURATION) DURATION
+        , ROUND(SUM(DURATION) / COUNT(DISTINCT SESSON_ID)) AVG_DUR
+  FROM  ( 
+        SELECT  TIMESTAMPDIFF(SECOND ,SRCH_DT, AFT_SRCH_DT) DURATION
+                , A.*
+          FROM  ( 
+                SELECT  A.*
+                        , LEAD(SRCH_DT, 1) OVER(PARTITION BY SESSON_ID ORDER BY SERS_NO) AFT_SRCH_DT
+                  FROM  FSN.FS_WLOG_MST A 
+                 WHERE  DATE_FORMAT(SRCH_DT, '%Y%m')= '202001'
+                ) A 
+        ) A
+```       
+
+
+14. 페이지 당 체류시간, -> 어떤 페이지에서 가장 오래 머물러 있었나요? 
+``` sql    
+      -- 어떤 페이지에서 가장 오래 머물러 있었나요? 
+SELECT  WPGE_NM 
+        , COUNT(DISTINCT SESSON_ID) SV 
+        , SUM(DURATION) DURATION
+        , ROUND(SUM(DURATION) / COUNT(DISTINCT SESSON_ID)) AVG_DUR
+  FROM  ( 
+        SELECT  TIMESTAMPDIFF(SECOND ,SRCH_DT, AFT_SRCH_DT) DURATION
+                , A.*
+          FROM  ( 
+                SELECT  A.*
+                        , LEAD(SRCH_DT, 1) OVER(PARTITION BY SESSON_ID ORDER BY SERS_NO) AFT_SRCH_DT
+                  FROM  FSN.FS_WLOG_MST A 
+                 WHERE  DATE_FORMAT(SRCH_DT, '%Y%m')= '202001'
+                ) A 
+        ) A
+ GROUP
+    BY  WPGE_NM
+```       
+
+
+
+15. 2020년 한해 어떤 페이지에서 가장 이탈이 많이 발생하는지 확인해주세요 .
+``` sql    
+SELECT  WPGE_NM 
+        , SUM(1)
+  FROM  ( 
+        SELECT  A.*
+                , ROW_NUMBER() OVER(PARTITION BY SESSON_ID ORDER BY SERS_NO DESC) RNK
+          FROM  FSN.FS_WLOG_MST A 
+         WHERE  DATE_FORMAT(SRCH_DT, '%Y')= '2020'
+        ) A         
+ WHERE  RNK = 1 
+ GROUP
+    BY  WPGE_NM 
+```       
+
+
+
+16. 2020년 5월 기준으로, 아무런 행동을 하지 않고 홈에 접속한 뒤, 바로 이탈한 회원 수(UV)를 구해주세요. 
+``` sql    
+SELECT  COUNT(DISTINCT MEM_NO) DAU 
+        , COUNT(DISTINCT CASE WHEN WPGE_NM = '홈' THEN MEM_NO END) 이탈
+        , ROUND(COUNT(DISTINCT CASE WHEN WPGE_NM = '홈' THEN MEM_NO END) / COUNT(DISTINCT MEM_NO), 2) PCT
+  FROM  ( 
+        SELECT  A.*
+                , ROW_NUMBER() OVER(PARTITION BY SESSON_ID ORDER BY SERS_NO DESC) RNK
+          FROM  FSN.FS_WLOG_MST A 
+         WHERE  DATE_FORMAT(SRCH_DT, '%Y%m')= '202005'
+        ) A         
+ WHERE  RNK = 1
+```       
