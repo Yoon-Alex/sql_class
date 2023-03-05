@@ -106,7 +106,7 @@ SELECT  YMD
 2. 테이블 생성 후, TRUNCATE 수행
 ``` sql
 TRUNCATE TABLE DAILY_REPORT_JBY
-
+;
 CREATE TABLE DAILY_REPORT_JBY AS ( 
 SELECT  YMD 
         , MAX(UV) UV
@@ -127,9 +127,9 @@ SELECT  YMD
                 , 0 JOIN_MEM
                 , 0 WITHDR_MEM
                 , 0 REST_MEM
-          FROM  FS_WLOG 
+          FROM  FS_WLOG_MST 
          WHERE  1=1 
-                AND YM = LEFT('20180201',6)
+                AND LEFT(YMD,6) = LEFT('20180201',6)
                 AND YMD <= '20180201' 
          GROUP
             BY  '20180201'  
@@ -241,9 +241,9 @@ SELECT  YMD
                 , 0 JOIN_MEM
                 , 0 WITHDR_MEM
                 , 0 REST_MEM
-          FROM  FS_WLOG 
+          FROM  FS_WLOG_MST 
          WHERE  1=1 
-                AND YM = LEFT(V_STD_DT,6)
+                AND LEFT(YMD,6) = LEFT(V_STD_DT,6)
                 AND YMD <= V_STD_DT 
          GROUP
             BY  V_STD_DT  
@@ -336,7 +336,7 @@ BEGIN
     DECLARE done INTEGER DEFAULT 0; -- 반복문 변수
     DECLARE STD_DD varchar(8); -- 커서에서사용할변수선언
 
-    DECLARE openCursor CURSOR FOR SELECT DS FROM CM_CLDR WHERE DS BETWEEN ST_DD AND EN_DD; -- 커서에서사용할 Select 테이블선언
+    DECLARE openCursor CURSOR FOR SELECT YMD FROM CM_CLDR WHERE YMD BETWEEN ST_DD AND EN_DD; -- 커서에서사용할 Select 테이블선언
     DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = true; -- 반복문 핸들러 선언
       
     OPEN openCursor; -- 커서오픈
