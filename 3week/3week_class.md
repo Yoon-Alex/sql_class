@@ -337,9 +337,9 @@ SELECT  COUNT(DISTINCT SESSON_ID) SV
 ``` sql    
       -- 어떤 페이지에서 가장 오래 머물러 있었나요? 
 SELECT  WPGE_NM 
-        , COUNT(DISTINCT SESSON_ID) SV 
+        , SUM(1) PV
         , SUM(DURATION) DURATION
-        , ROUND(SUM(DURATION) / COUNT(DISTINCT SESSON_ID)) AVG_DUR
+        , ROUND(SUM(DURATION) / SUM(1)) AVG_DUR
   FROM  ( 
         SELECT  TIMESTAMPDIFF(SECOND ,SRCH_DT, AFT_SRCH_DT) DURATION
                 , A.*
