@@ -373,9 +373,10 @@ SELECT  WPGE_NM
 
 
 
-16. 2020년 5월 기준으로, 아무런 행동을 하지 않고 홈에 접속한 뒤, 바로 이탈한 회원 수(UV)를 구해주세요. 
+16. 2020년 5월 기준으로, 일별로 아무런 행동을 하지 않고 홈에 접속한 뒤, 바로 이탈한 회원 수(UV)를 구해주세요.(전체 회원 UV 중에 차지하는 비율도 함께 구해주세요)
 ``` sql    
-SELECT  COUNT(DISTINCT MEM_NO) DAU 
+SELECT  YMD
+        , COUNT(DISTINCT MEM_NO) DAU 
         , COUNT(DISTINCT CASE WHEN RNK = 1 AND WPGE_NM = '홈' THEN MEM_NO END) 이탈
         , ROUND(COUNT(DISTINCT CASE WHEN RNK = 1 AND WPGE_NM = '홈' THEN MEM_NO END) / COUNT(DISTINCT MEM_NO), 2) PCT
   FROM  ( 
@@ -383,5 +384,7 @@ SELECT  COUNT(DISTINCT MEM_NO) DAU
                 , ROW_NUMBER() OVER(PARTITION BY SESSON_ID ORDER BY SERS_NO DESC) RNK
           FROM  FSN.FS_WLOG_MST A 
          WHERE  DATE_FORMAT(SRCH_DT, '%Y%m')= '202005'
-        ) A         
+        ) A
+ GROUP
+    BY  YMD
 ```       
