@@ -505,7 +505,7 @@ BEGIN
     DECLARE done INTEGER DEFAULT 0; -- 반복문 변수
     DECLARE STD_DD varchar(8); -- 커서에서사용할변수선언
 
-    DECLARE openCursor CURSOR FOR SELECT DS FROM CM_CLDR WHERE DS BETWEEN ST_DD AND EN_DD; -- 커서에서사용할 Select 테이블선언
+    DECLARE openCursor CURSOR FOR SELECT YMD FROM CM_CLDR WHERE YMD BETWEEN ST_DD AND EN_DD; -- 커서에서사용할 Select 테이블선언
     DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = true; -- 반복문 핸들러 선언
       
     OPEN openCursor; -- 커서오픈
